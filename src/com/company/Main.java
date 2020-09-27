@@ -3,15 +3,16 @@ import java.util.Arrays;
 
 public class Main {
 
-    static char[] question_mark = new char[] {'?'};
     static char[] open_paren = new char[] {'('};
     static char[] close_paren = new char[] {')'};
+    static char[] end_bool = {','};
     static char[] begin_test = new char[] {'t','e','s','t'};
+    static char[] end_test = new char[] {'?'};
     static char[] bool_type = new char[] {'b','o','o','l'};
     static char[] true_1 = new char[] {'1'};
     static char[] false_0 = new char[] {'0'};
-   static char[] negation = new char[] {'\''};
-   static char[] conjunction = new char[] {'^'};
+    static char[] negation = new char[] {'\''};
+    static char[] conjunction = new char[] {'^'};
     static char[] disjunction = new char[] {'v'};
     static char[] equivalence = new char[] {'<','-','>'};
     static char[] implication = new char[] {'-','>'};
@@ -42,7 +43,7 @@ public class Main {
         char[] arr = new char[20];
         int tok_num = 0;
 
-        char[][] symbols = {open_paren,close_paren};
+        char[][] symbols = {open_paren,close_paren,end_bool,end_test,true_1,false_0,negation,conjunction,disjunction, {'>'}};
         for (int i =0;i<test.length;i++){
             for(int j =0; j<symbols.length;j++){
                 if(contains(symbols[j], test[i])){
