@@ -16,10 +16,22 @@ public class Main {
     static char[] equivalence = new char[] {'<','-','>'};
     static char[] implication = new char[] {'-','>'};
 
+    public void initialize(char[] sentence) {
+
+        throw new UnsupportedOperationException();
+    }
+
     public static void main(String[] args) {
-        char[] test = {'b','o','o','l'};
-        for(int i=0;i<test.length; i++){
-            System.out.println(test[i]==bool_type[i]);
+        String sentence = "^vTEST bool ' P )";
+        String sentence2 = "bool P = 0, bool Q = 0, bool R = P' ^ Q', test R?";
+        char[][] test = {{'<','-','>'},{'v'}};
+        char[] test2 = sentence2.toCharArray();
+        char[][] split_sent = new char[20][20];
+        char[] arr = new char[20];
+        int tok_num = 0;
+        for(int i=0;i<test2.length; i++){
+
+            System.out.println(test2[i]);
         }
 
     }
