@@ -6,34 +6,42 @@ import java.lang.*;
 public class Lexer extends model.AbstractLexer {
 	public char[] sent = new char[80];
 
-	static char[] open_paren = new char[] {'('};
-	static char[] close_paren = new char[] {')'};
-	static char[] end_bool = {','};
-	static char[] begin_test = new char[] {'t','e','s','t'};
-	static char[] end_test = new char[] {'?'};
-	static char[] bool_type = new char[] {'b','o','o','l'};
-	static char[] true_1 = new char[] {'1'};
-	static char[] false_0 = new char[] {'0'};
-	static char[] negation = new char[] {'\''};
-	static char[] conjunction = new char[] {'^'};
-	static char[] disjunction = new char[] {'v'};
-	static char[] equivalence = new char[] {'<','-','>'};
-	static char[] implication = new char[] {'-','>'};
-
-	char[][] symbols = {open_paren,close_paren,end_bool,end_test};
+	//symbols = {'(', ')', ',', '?', '1', '0', '\'', '^', 'v', '='};
+	int[] int_symbols = {40, 41, 44, 63, 49, 48, 39, 94, 118, 61};
+	String[] tokens = {"OPEN_PAREN", "CLOSE_PAREN", "END_BOOL", "END_TEST", "TRUE_LITERAL", "FALSE_LITERAL", "NEGATION", "CONJUNCTION", "DISJUNCTION", "ASSIGNMENT"};
 
 	/*
 	Looks through a character array and returns true if the specified character is in said char[].
 	 */
-	public static boolean contains(char[] list, char target){
+	public static boolean isAlpha(char target) {
+
+		int t = target;
 		boolean in = false;
-		for (char t : list){
-			if (t == target){
-				in = true;
-				break;
-			}
+
+		if ((t > 64) && (t < 91) && !(t==86)) {
+			in = true;
+		} else if ((t > 96) && (t < 123)&& !(t==118)) {
+			in = true;
 		}
 		return in;
+	}
+
+	public static boolean isBool(int a, int b, int c, int d) {
+		boolean res = false;
+		if ((a == 98 || a == 66) && (b == 111 || b == 79) && (c == 111 || c == 79) && (d == 108 || d == 76)) {
+			res = true;
+		}
+
+		return res;
+	}
+
+	public static boolean isTest(int a, int b, int c, int d) {
+		boolean res = false;
+		if ((a == 84 || a == 116) && (b == 69 || b == 101) && (c == 83 || c == 115) && (d == 84 || d == 116)) {
+			res = true;
+		}
+
+		return res;
 	}
 
 	/**
@@ -63,6 +71,45 @@ public class Lexer extends model.AbstractLexer {
 	 */
 	@Override
 	public void lex() {
+		for (int i = 0; i < sent.length; i++) {
+
+			for (int j = 0; j < int_symbols.length; j++) {
+				if (int_symbols[j] == sent[i]) {
+					System.out.println(tokens[j]);
+
+				}
+			}
+
+
+			if (((i + 3) < sent.length) && (isBool(sent[i], sent[i + 1], sent[i + 2], sent[i + 3]))) {
+				System.out.println(String.format("%c%c%c%c = BEGIN_BOOL", sent[i], sent[i + 1], sent[i + 2], sent[i + 3]));
+				i += 3;
+
+			} else if (((i + 3) < sent.length) && isTest((int) sent[i], (int) sent[i + 1], (int) sent[i + 2], (int) sent[i + 3])) {
+				System.out.println(String.format("%c%c%c%c = BEGIN_TEST", sent[i], sent[i + 1], sent[i + 2], sent[i + 3]));
+				i += 3;
+
+			} else if (((i + 2) < sent.length) && (sent[i] == 60) && (sent[i + 1] == 45) && (sent[i + 2] == 62)) {
+				System.out.println(String.format("%c%c%c = EQUIVALENCE", sent[i], sent[i + 1], sent[i+2]));
+				i += 2;
+
+			} else if (((i + 1) < sent.length) && (sent[i] == 45) && (sent[i + 1] == 62)) {
+				System.out.println(String.format("%c%c = IMPLICATION", sent[i], sent[i+1]));
+				i += 1;
+
+			}
+
+			// Tests for whitespace (32 in unicode)
+			else if (sent[i] == 32) {
+				System.out.print("");
+			}
+			// 65 - 90 are capital letters; 97 - 122 are lowercase letters
+			else if (isAlpha(sent[i])) {
+				System.out.println(String.format("%c = VARIABLE", sent[i]));
+			}
+
+
+		}
 
 		// TODO: implement this method stub
 		throw new UnsupportedOperationException();
