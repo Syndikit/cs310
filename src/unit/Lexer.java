@@ -6,11 +6,8 @@ import java.lang.*;
 import static model.AbstractLexer.Tokens.*;
 
 public class Lexer extends model.AbstractLexer {
-	public char[] sent = new char[80];
 
-	//symbols = {'(', ')', ',', '?', '1', '0', '\'', '^', 'v', '='};
-	int[] int_symbols = {40, 41, 44, 63, 49, 48, 39, 94, 118, 61};
-	Tokens[] tokens = {OPEN_PAREN, CLOSE_PAREN, END_BOOL, END_TEST, TRUE_LITERAL, FALSE_LITERAL, NEGATION, CONJUNCTION, DISJUNCTION, ASSIGNMENT};
+
 
 	/*
 	Checks whether character is within the acceptable range of decimal values for letters (upper and lowercase)
@@ -49,6 +46,22 @@ public class Lexer extends model.AbstractLexer {
 
 		return res;
 	}
+/*
+Refactor to check for the different symbols
+ */
+	public static boolean isSymbol(char target) {
+
+		int t = target;
+		boolean in = false;
+
+		if ((t > 64) && (t < 91) && !(t==86)) {
+			in = true;
+		} else if ((t > 96) && (t < 123)&& !(t==118)) {
+			in = true;
+		}
+		return in;
+	}
+
 
 	/**
 	 * Assumed to be called once and only once before the
@@ -60,9 +73,7 @@ public class Lexer extends model.AbstractLexer {
 	@Override
 	public void initialize(char[] sentence) {
 
-		for(int i=0; i<sentence.length;i++){
-			sent[i] = sentence[i];
-		}
+
 
 		throw new UnsupportedOperationException();
 	}
@@ -78,53 +89,7 @@ public class Lexer extends model.AbstractLexer {
 	@Override
 	public void lex() {
 
-		for (int i = 0; i < sent.length; i++) {
 
-			for (int j = 0; j < int_symbols.length; j++) {
-				if (int_symbols[j] == sent[i]) {
-					//System.out.println(tokens[j]);
-					TOKEN = tokens[j];
-				}
-			}
-
-
-			if (((i + 3) < sent.length) && (isBool(sent[i], sent[i + 1], sent[i + 2], sent[i + 3]))) {
-				//System.out.println(String.format("%c%c%c%c = BEGIN_BOOL", sent[i], sent[i + 1], sent[i + 2], sent[i + 3]));
-				TOKEN = BEGIN_BOOL;
-				i += 3;
-
-			} else if (((i + 3) < sent.length) && isTest((int) sent[i], (int) sent[i + 1], (int) sent[i + 2], (int) sent[i + 3])) {
-				//System.out.println(String.format("%c%c%c%c = BEGIN_TEST", sent[i], sent[i + 1], sent[i + 2], sent[i + 3]));
-				TOKEN = BEGIN_TEST;
-				i += 3;
-
-			} else if (((i + 2) < sent.length) && (sent[i] == 60) && (sent[i + 1] == 45) && (sent[i + 2] == 62)) {
-				//System.out.println(String.format("%c%c%c = EQUIVALENCE", sent[i], sent[i + 1], sent[i+2]));
-				TOKEN = EQUIVALENCE;
-				i += 2;
-
-			} else if (((i + 1) < sent.length) && (sent[i] == 45) && (sent[i + 1] == 62)) {
-				//System.out.println(String.format("%c%c = IMPLICATION", sent[i], sent[i+1]));
-				TOKEN = IMPLICATION;
-				i += 1;
-
-			}
-
-			// Tests for whitespace (32 in unicode)
-			else if (sent[i] == 32) {
-				//System.out.print("");
-				continue;
-			}
-			// 65 - 90 are capital letters; 97 - 122 are lowercase letters
-			else if (isAlpha(sent[i])) {
-				System.out.println(String.format("%c = VARIABLE", sent[i]));
-				TOKEN = VARIABLE_NAME;
-			}
-
-
-		}
-
-		// TODO: implement this method stub
-		throw new UnsupportedOperationException();
+		throw new UnsupportedOperationException("Lex method failed");
 	}
 }
