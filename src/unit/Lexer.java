@@ -7,18 +7,9 @@ import static model.AbstractLexer.Tokens.*;
 
 public class Lexer extends model.AbstractLexer {
 
-	private char[][] LEXEMES = new char[30][10];
 	private int index = 0;
 
-	// Getter for current index
-	public int getIndex() {
-		return index;
-	}
-
-	// Getter for current index
-	public char[] getLEXEME(int position) {
-		return LEXEMES[position];
-	}
+	private char[] S;
 
 	// Setter for index
 	public void setIndex(int newIndex) {
@@ -110,48 +101,11 @@ public class Lexer extends model.AbstractLexer {
 	 */
 	@Override
 	public void initialize(char[] sentence) {
+		S = sentence;
 
-		for(int i=0;i<sentence.length;i++){
-			int ind = getIndex();
-			if(isBool(sentence[0],sentence[1],sentence[2],sentence[3])){
-				LEXEME = new char[]{sentence[0], sentence[1], sentence[2], sentence[3]};
-				this.LEXEMES[ind] = LEXEME;
-				setIndex(index++);
-				i += 3;
-			}
-			else if(isTest(sentence[0],sentence[1],sentence[2],sentence[3])){
-				LEXEME = new char[]{sentence[0], sentence[1], sentence[2], sentence[3]};
-				this.LEXEMES[ind] = LEXEME;
-				setIndex(index++);
-				i += 3;
-			}
-			else if(isAlpha(sentence[0])){
-				LEXEME = new char[]{sentence[0]};
-				this.LEXEMES[ind] = LEXEME;
-				setIndex(index++);
-			}
-			else if(isSymbol(sentence[0])){
-				LEXEME = new char[]{sentence[0]};
-				this.LEXEMES[ind] = LEXEME;
-				setIndex(index++);
-			}
-			else if(isEquivalence(sentence[0],sentence[1],sentence[2])){
-				LEXEME = new char[]{sentence[0],sentence[1],sentence[2]};
-				this.LEXEMES[ind] = LEXEME;
-				setIndex(index++);
-				i += 2;
-			}
-			else if(isImplication(sentence[0],sentence[1])){
-				LEXEME = new char[]{sentence[0],sentence[1]};
-				this.LEXEMES[ind] = LEXEME;
-				setIndex(index++);
-				i += 1;
-			}
-		}
+		index = 0;
 
-		setIndex(0);
-
-		throw new UnsupportedOperationException();
+		//throw new UnsupportedOperationException();
 	}
 
 	/**
@@ -164,57 +118,71 @@ public class Lexer extends model.AbstractLexer {
 	 */
 	@Override
 	public void lex() {
-		int ind = getIndex();
+		int ind = index;
 
-		LEXEME = getLEXEME(ind);
+		Tokens TOKEN;
+		if ((int) this.S[ind] == 40) {
+			this.TOKEN = OPEN_PAREN;
+			index++;
+		}
+		else if((int) this.S[ind] == 41){
+			this.TOKEN = CLOSE_PAREN;
+			index++;
+		}
+		else if((int) this.S[ind] == 44){
+			this.TOKEN = END_BOOL;
+			index+=4;
+		}
+		else if((int) this.S[ind] == 63){
+			this.TOKEN = END_TEST;
+			index+=4;
+		}
+		else if((int) this.S[ind] == 49){
+			this.TOKEN = TRUE_LITERAL;
+			index++;
+		}
+		else if((int) this.S[ind] == 48){
+			this.TOKEN = FALSE_LITERAL;
+			index++;
+		}
+		else if((int) this.S[ind] == 39){
+			this.TOKEN = NEGATION;
+			index++;
+		}
+		else if((int) this.S[ind] == 94){
+			this.TOKEN = CONJUNCTION;
+			index++;
+		}
+		else if(((int) this.S[ind] == 118) || ((int) this.S[ind] == 86)){
+			this.TOKEN =  DISJUNCTION;
+			index++;
+		}
+		else if((int) this.S[ind] == 61){
+			this.TOKEN = ASSIGNMENT;
+			index++;
+		}
+		else if(isBool(this.S[ind],this.S[ind+1],this.S[ind+2], this.S[ind+3])){
+			this.TOKEN = BEGIN_BOOL;
+			index++;
+		}
+		else if(isTest(this.S[ind],this.S[ind+1],this.S[ind+2],this.S[ind+3])){
+			this.TOKEN = BEGIN_TEST;
+			index++;
+		}
+		else if(isEquivalence(this.S[ind],this.S[ind+1],this.S[ind+2])){
+			this.TOKEN = EQUIVALENCE;
+			index++;
+		}
+		else if(isImplication(this.S[ind],this.S[ind+1])){
+			this.TOKEN = IMPLICATION;
+			index++;
+		}
+		else if(isAlpha(this.S[ind])){
+			this.TOKEN = VARIABLE_NAME;
+			index++;
+		}
 
-		if (LEXEME[0] == 40) {
-			TOKEN = OPEN_PAREN;
-		}
-		else if(LEXEME[0] == 41){
-			TOKEN = CLOSE_PAREN;
-		}
-		else if(LEXEME[0] == 44){
-			TOKEN = END_BOOL;
-		}
-		else if(LEXEME[0] == 63){
-			TOKEN = END_TEST;
-		}
-		else if(LEXEME[0] == 49){
-			TOKEN = TRUE_LITERAL;
-		}
-		else if(LEXEME[0] == 48){
-			TOKEN = FALSE_LITERAL;
-		}
-		else if(LEXEME[0] == 39){
-			TOKEN = NEGATION;
-		}
-		else if(LEXEME[0] == 94){
-			TOKEN = CONJUNCTION;
-		}
-		else if((LEXEME[0] == 118) || (LEXEME[0] == 86)){
-			TOKEN =  DISJUNCTION;
-		}
-		else if(LEXEME[0] == 61){
-			TOKEN = ASSIGNMENT;
-		}
-		else if(isBool(LEXEME[0],LEXEME[1],LEXEME[2],LEXEME[3])){
-			TOKEN = BEGIN_BOOL;
-		}
-		else if(isTest(LEXEME[0],LEXEME[1],LEXEME[2],LEXEME[3])){
-			TOKEN = BEGIN_TEST;
-		}
-		else if(isEquivalence(LEXEME[0],LEXEME[1],LEXEME[2])){
-			TOKEN = EQUIVALENCE;
-		}
-		else if(isImplication(LEXEME[0],LEXEME[1])){
-			TOKEN = IMPLICATION;
-		}
-		else if(isAlpha(LEXEME[0])){
-			TOKEN = VARIABLE_NAME;
-		}
-
-		throw new UnsupportedOperationException("Lex method failed");
+		//throw new UnsupportedOperationException("Lex method failed");
 	}
 
 }
