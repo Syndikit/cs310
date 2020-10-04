@@ -1,6 +1,7 @@
 package com.company;
 
 import model.AbstractLexer;
+import unit.Lexer;
 
 import static model.AbstractLexer.Tokens.*;
 
@@ -39,50 +40,6 @@ public class Main {
         TRUE_LITERAL,
         FALSE_LITERAL
     }
-
-    public void initialize(char[] sentence) {
-        for(int i=0;i<sentence.length;i++){
-            int ind = getIndex();
-            if(isBool(sentence[0],sentence[1],sentence[2],sentence[3])){
-                LEXEME = new char[]{sentence[0], sentence[1], sentence[2], sentence[3]};
-                this.LEXEMES[ind] = LEXEME;
-                setIndex(index++);
-                i += 3;
-            }
-            else if(isTest(sentence[0],sentence[1],sentence[2],sentence[3])){
-                LEXEME = new char[]{sentence[0], sentence[1], sentence[2], sentence[3]};
-                this.LEXEMES[ind] = LEXEME;
-                setIndex(index++);
-                i += 3;
-            }
-            else if(isAlpha(sentence[0])){
-                LEXEME = new char[]{sentence[0]};
-                this.LEXEMES[ind] = LEXEME;
-                setIndex(index++);
-            }
-            else if(isSymbol(sentence[0])){
-                LEXEME = new char[]{sentence[0]};
-                this.LEXEMES[ind] = LEXEME;
-                setIndex(index++);
-            }
-            else if(isEquivalence(sentence[0],sentence[1],sentence[2])){
-                LEXEME = new char[]{sentence[0],sentence[1],sentence[2]};
-                this.LEXEMES[ind] = LEXEME;
-                setIndex(index++);
-                i += 2;
-            }
-            else if(isImplication(sentence[0],sentence[1])){
-                LEXEME = new char[]{sentence[0],sentence[1]};
-                this.LEXEMES[ind] = LEXEME;
-                setIndex(index++);
-                i += 1;
-            }
-        }
-
-        setIndex(0);
-        throw new UnsupportedOperationException();
-    }
-
 
     private char[][] LEXEMES = new char[30][10];
     private int index = 0;
@@ -239,13 +196,17 @@ public class Main {
 
         char[] test = sentence.toCharArray();
         char[] test2 = sentence2.toCharArray();
-        char[] retest = new char[200];
+        Lexer L = new Lexer();
+        L.initialize(test);
+
+
 
         //symbols = {'(', ')', ',', '?', '1', '0', '\'', '^', 'v', '='};
         int[] int_symbols = {40, 41, 44, 63, 49, 48, 39, 94, 118, 61};
         //String[] tokens = {"OPEN_PAREN", "CLOSE_PAREN", "END_BOOL", "END_TEST", "TRUE_LITERAL", "FALSE_LITERAL", "NEGATION", "CONJUNCTION", "DISJUNCTION", "ASSIGNMENT"};
         AbstractLexer.Tokens[] tokens = {OPEN_PAREN, CLOSE_PAREN, END_BOOL, END_TEST, TRUE_LITERAL, FALSE_LITERAL, NEGATION, CONJUNCTION, DISJUNCTION, ASSIGNMENT};
 
+        /*
         for (int i = 0; i < test.length; i++) {
 
             for (int j = 0; j < int_symbols.length; j++) {
@@ -301,6 +262,8 @@ public class Main {
 
 
         }
+
+         */
 
 
 /*

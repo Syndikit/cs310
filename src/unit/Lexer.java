@@ -7,15 +7,8 @@ import static model.AbstractLexer.Tokens.*;
 
 public class Lexer extends model.AbstractLexer {
 
-	private int index = 0;
-
+	private int index;
 	private char[] S;
-
-	// Setter for index
-	public void setIndex(int newIndex) {
-		this.index = newIndex;
-	}
-
 
 	/*
 	Checks whether character is within the acceptable range of decimal values for letters (upper and lowercase)
@@ -27,65 +20,6 @@ public class Lexer extends model.AbstractLexer {
 		if ((target > 64) && (target < 91) && !(target==86)) {
 			in = true;
 		} else if ((target > 96) && (target < 123)&& !(target==118)) {
-			in = true;
-		}
-		return in;
-	}
-	/*
-	Specifically looks at whether the lexeme being evaluated is of the bool variety.
-	 */
-	public static boolean isBool(int a, int b, int c, int d) {
-		boolean res = false;
-		if ((a == 98 || a == 66) && (b == 111 || b == 79) && (c == 111 || c == 79) && (d == 108 || d == 76)) {
-			res = true;
-		}
-
-		return res;
-	}
-	/*
-    Specifically looks at whether the lexeme being evaluated is of the begin test variety.
-     */
-	public static boolean isTest(int a, int b, int c, int d) {
-		boolean res = false;
-		if ((a == 84 || a == 116) && (b == 69 || b == 101) && (c == 83 || c == 115) && (d == 84 || d == 116)) {
-			res = true;
-		}
-
-		return res;
-	}
-	/*
-	Refactor to check for anything not alphanumeric in the latin system
- 	*/
-	public static boolean isSymbol(char target) {
-
-		boolean in = false;
-
-		if ((target > 32) && (target < 50) && (target != 45)) {
-			in = true;
-		} else if ((target > 57) && (target < 65) && (target != 60)) {
-			in = true;
-		}
-		else if ((target > 90) && (target < 97)) {
-			in = true;
-		}
-		return in;
-	}
-
-	public static boolean isEquivalence(char a, char b, char c) {
-
-		boolean in = false;
-
-		if ((a == 60) && (b == 45) && (c == 62)) {
-			in = true;
-		}
-		return in;
-	}
-
-	public static boolean isImplication(char a, char b) {
-
-		boolean in = false;
-
-		if ((a == 45) && (b == 62)) {
 			in = true;
 		}
 		return in;
@@ -108,6 +42,8 @@ public class Lexer extends model.AbstractLexer {
 		//throw new UnsupportedOperationException();
 	}
 
+
+
 	/**
 	 * Advances to the next lexeme in the input and updates
 	 * the values of the {@link AbstractLexer#LEXEME} and
@@ -118,67 +54,85 @@ public class Lexer extends model.AbstractLexer {
 	 */
 	@Override
 	public void lex() {
-		int ind = index;
 
-		Tokens TOKEN;
-		if ((int) this.S[ind] == 40) {
-			this.TOKEN = OPEN_PAREN;
+		TOKEN = null;
+
+		if(S[index]==32){
+			index+=1;
+		}
+		// Tests for ( symbol
+		if (S[index] == 40) {
+			TOKEN = OPEN_PAREN;
+			index+=1;
+		}
+		// Tests for ) symbol
+		else if(S[index] == 41){
+			TOKEN = CLOSE_PAREN;
+			index+=1;
+		}
+		// Tests for , symbol
+		else if(S[index] == 44){
+			TOKEN = END_BOOL;
+			index+=1;
+		}
+		// Tests for ? symbol
+		else if(S[index] == 63){
+			TOKEN = END_TEST;
+			index+=1;
+		}
+		// Tests for 1 character
+		else if(S[index] == 49){
+			TOKEN = TRUE_LITERAL;
+			index+=1;
+		}
+		// Tests for 0 character
+		else if(S[index] == 48){
+			TOKEN = FALSE_LITERAL;
 			index++;
 		}
-		else if((int) this.S[ind] == 41){
-			this.TOKEN = CLOSE_PAREN;
+		// Tests for ' symbol
+		else if(S[index] == 39){
+			TOKEN = NEGATION;
 			index++;
 		}
-		else if((int) this.S[ind] == 44){
-			this.TOKEN = END_BOOL;
+		// Tests for ^ symbol
+		else if(S[index] == 94){
+			TOKEN = CONJUNCTION;
+			index++;
+		}
+		// Tests for v or V character
+		else if((S[index] == 118) || (S[index] == 86)){
+			TOKEN =  DISJUNCTION;
+			index++;
+		}
+		// Tests for = symbol
+		else if((int) this.S[index] == 61){
+			TOKEN = ASSIGNMENT;
+			index++;
+		}
+		// Specifically looks at whether the lexeme being evaluated is of the bool variety and ensures the index for the last char will be inbounds.
+		else if(((index+4)<S.length) && (S[index] == 98 || S[index] == 66) && (S[index+1] == 111 || S[index+1] == 79) && (S[index+2] == 111 || S[index+2] == 79) && (S[index+3] == 108 || S[index+3] == 76)){
+			TOKEN = BEGIN_BOOL;
 			index+=4;
 		}
-		else if((int) this.S[ind] == 63){
-			this.TOKEN = END_TEST;
+		// Specifically looks at whether the lexeme being evaluated is of the test variety and ensures the index for the last char will be inbounds.
+		else if(((index+4)<S.length) && (S[index] == 84 || S[index] == 116) && (S[index+1] == 69 || S[index+1] == 101) && (S[index+2] == 83 || S[index+2] == 115) && (S[index+3] == 84 || S[index+3] == 116)){
+			TOKEN = BEGIN_TEST;
 			index+=4;
 		}
-		else if((int) this.S[ind] == 49){
-			this.TOKEN = TRUE_LITERAL;
-			index++;
+		// Looks for <-> and ensures the index for the last char will be inbounds.
+		else if(((index+3) < S.length) && (S[index] == 60) && (S[index+1] == 45) && (S[index+2] == 62)){
+			TOKEN = EQUIVALENCE;
+			index+=3;
 		}
-		else if((int) this.S[ind] == 48){
-			this.TOKEN = FALSE_LITERAL;
-			index++;
+		// Looks for -> and ensures the index for the last char will be inbounds.
+		else if(((index+3) < S.length) && (S[index] == 45) && (S[index+1] == 62)){
+			TOKEN = IMPLICATION;
+			index+=2;
 		}
-		else if((int) this.S[ind] == 39){
-			this.TOKEN = NEGATION;
-			index++;
-		}
-		else if((int) this.S[ind] == 94){
-			this.TOKEN = CONJUNCTION;
-			index++;
-		}
-		else if(((int) this.S[ind] == 118) || ((int) this.S[ind] == 86)){
-			this.TOKEN =  DISJUNCTION;
-			index++;
-		}
-		else if((int) this.S[ind] == 61){
-			this.TOKEN = ASSIGNMENT;
-			index++;
-		}
-		else if(isBool(this.S[ind],this.S[ind+1],this.S[ind+2], this.S[ind+3])){
-			this.TOKEN = BEGIN_BOOL;
-			index++;
-		}
-		else if(isTest(this.S[ind],this.S[ind+1],this.S[ind+2],this.S[ind+3])){
-			this.TOKEN = BEGIN_TEST;
-			index++;
-		}
-		else if(isEquivalence(this.S[ind],this.S[ind+1],this.S[ind+2])){
-			this.TOKEN = EQUIVALENCE;
-			index++;
-		}
-		else if(isImplication(this.S[ind],this.S[ind+1])){
-			this.TOKEN = IMPLICATION;
-			index++;
-		}
-		else if(isAlpha(this.S[ind])){
-			this.TOKEN = VARIABLE_NAME;
+		// Looks for alphabetical characters that don't fit the above criteria and are variables
+		else if(isAlpha(S[index])){
+			TOKEN = VARIABLE_NAME;
 			index++;
 		}
 
