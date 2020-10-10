@@ -29,7 +29,7 @@ public class Lexer extends model.AbstractLexer {
 	/**
 	 * Assumed to be called once and only once before the
 	 * first call to the {@link AbstractLexer#lex()} method in
-	 * order to initialize the lexer's input source.
+	 * order to initialize the lexer input source.
 	 *
 	 * @param sentence A sentence to use as lexer input
 	 */
@@ -54,8 +54,6 @@ public class Lexer extends model.AbstractLexer {
 	 */
 	@Override
 	public void lex() {
-
-		TOKEN = null;
 
 		if(S[index]==32){
 			index+=1;
@@ -111,12 +109,12 @@ public class Lexer extends model.AbstractLexer {
 			index++;
 		}
 		// Specifically looks at whether the lexeme being evaluated is of the bool variety and ensures the index for the last char will be inbounds.
-		else if(((index+4)<S.length) && (S[index] == 98 || S[index] == 66) && (S[index+1] == 111 || S[index+1] == 79) && (S[index+2] == 111 || S[index+2] == 79) && (S[index+3] == 108 || S[index+3] == 76)){
+		else if(((index+4) < S.length) && (S[index] == 98 || S[index] == 66) && (S[index+1] == 111 || S[index+1] == 79) && (S[index+2] == 111 || S[index+2] == 79) && (S[index+3] == 108 || S[index+3] == 76)){
 			TOKEN = BEGIN_BOOL;
 			index+=4;
 		}
 		// Specifically looks at whether the lexeme being evaluated is of the test variety and ensures the index for the last char will be inbounds.
-		else if(((index+4)<S.length) && (S[index] == 84 || S[index] == 116) && (S[index+1] == 69 || S[index+1] == 101) && (S[index+2] == 83 || S[index+2] == 115) && (S[index+3] == 84 || S[index+3] == 116)){
+		else if(((index+4) < S.length) && (S[index] == 84 || S[index] == 116) && (S[index+1] == 69 || S[index+1] == 101) && (S[index+2] == 83 || S[index+2] == 115) && (S[index+3] == 84 || S[index+3] == 116)){
 			TOKEN = BEGIN_TEST;
 			index+=4;
 		}
