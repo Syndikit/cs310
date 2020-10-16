@@ -28,7 +28,6 @@ public class Parser extends model.AbstractParser {
 	public boolean evaluate(char[] sentence) {
 		Lex.initialize(sentence);
 		Lex.lex();
-		toks = Lex.tokens;
 		// TODO: implement this method stub
 		throw new UnsupportedOperationException();
 	}
