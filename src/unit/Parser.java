@@ -60,11 +60,11 @@ public class Parser extends model.AbstractParser {
 		}
 		else{
 			acceptable = false;
-			throw new UnsupportedOperationException("Lexer next token unacceptable. Accept method failure.");
 		}
 		return acceptable;
 	}
 
+	// Looks good
 	/**
 	 * If the lexer's next token matches the acceptable
 	 * token, advances the lexer. Otherwise, throws an
