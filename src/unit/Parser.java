@@ -28,8 +28,19 @@ public class Parser extends model.AbstractParser {
 	public boolean evaluate(char[] sentence) {
 		Lex.initialize(sentence);
 		Lex.lex();
+		boolean evaluation = false;
+
+		if(sentence != null){
+			do{
+				Lex.lex();
+				System.out.println(Lex.TOKEN);
+			}while(Lex.TOKEN != null);
+		}
+		else{
+			throw new UnsupportedOperationException();
+		}
 		// TODO: implement this method stub
-		throw new UnsupportedOperationException();
+		return evaluation;
 	}
 
 	/**
