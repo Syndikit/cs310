@@ -1,9 +1,18 @@
 package com.company;
 
 import model.AbstractLexer;
+import model.AbstractParser;
 import unit.Lexer;
+import unit.Parser;
 
 public class Main {
+
+    public boolean evaluate(AbstractLexer Lex, char[] sentence) {
+        Lex.initialize(sentence);
+        Lex.lex();
+        // TODO: implement this method stub
+        throw new UnsupportedOperationException();
+    }
 
 
 

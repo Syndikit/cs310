@@ -36,27 +36,41 @@ public class Parser extends model.AbstractParser {
 	 * If the lexer's next token matches the acceptable
 	 * token, returns true and advances the lexer.
 	 * Otherwise, returns false and does not advance.
+	 * Difference between expect: only does not move forward if error.
 	 *
 	 * @param token The acceptable token
 	 * @return Whether the next token is acceptable
 	 */
 	@Override
 	public boolean accept(Tokens token) {
-		// TODO: implement this method stub
-		throw new UnsupportedOperationException();
+		boolean acceptable = true;
+		if (Lex.TOKEN==token){
+			Lex.lex();
+		}
+		else{
+			acceptable = false;
+			throw new UnsupportedOperationException("Lexer next token unacceptable. Accept method failure.");
+		}
+		return acceptable;
 	}
 
 	/**
 	 * If the lexer's next token matches the acceptable
 	 * token, advances the lexer. Otherwise, throws an
 	 * <code>IllegalState</code> exception.
+	 * Difference between accept: does not move forward AND throws error.
 	 *
 	 * @param token The acceptable token
 	 * @return Whether the next token is acceptable
 	 */
 	@Override
 	public void expect(Tokens token) {
-		// TODO: implement this method stub
-		throw new UnsupportedOperationException();
+		if (Lex.TOKEN==token){
+			Lex.lex();
+		}
+		else{
+			throw new UnsupportedOperationException("Lexer next token unacceptable. Expect method failure.");
+		}
+		return;
 	}
 }
