@@ -54,19 +54,22 @@ public class Parser extends model.AbstractParser {
 	*
 	*/
 	private boolean program() {
-		trace_open("Program");
+		//trace_open("Program");
 		lookup_index = 0;
 		lexeme_index = 0;
-		if(accept(Tokens.BEGIN_BOOL)){
-			assignment();
+		boolean result = false;
+		while(peek(Tokens.BEGIN_BOOL) || peek(Tokens.BEGIN_TEST)){
+			if(accept(Tokens.BEGIN_BOOL))
+				assignment();
+			else if(accept(Tokens.BEGIN_TEST))
+				result = evaluation();
 		}
-		boolean result = evaluation();
 
 		return result;
 	}
 
 	private void assignment() {
-		boolean result = false;
+		expect(Tokens.BEGIN_BOOL);
 		expect(Tokens.VARIABLE_NAME);
 		char var = variable();
 		expect(Tokens.ASSIGNMENT);
@@ -78,17 +81,19 @@ public class Parser extends model.AbstractParser {
 	}
 
 	private boolean evaluation() {
-		accept(Tokens.BEGIN_TEST);
-		boolean equivalence = equivalence();
-		accept(Tokens.END_TEST);
-		return equivalence;
+		boolean result = true;
+		while(!accept(Tokens.END_TEST)){
+			result = equivalence();
+		}
+
+		return result;
 	}
 
 	private boolean equivalence() {
 
 		boolean result = implication();
 		while(accept(Tokens.EQUIVALENCE)){
-			result = (result == implication());
+			return result == implication();
 		}
 		return result;
 	}
@@ -98,7 +103,9 @@ public class Parser extends model.AbstractParser {
 		while(accept(Tokens.IMPLICATION)) {
 			if(result && !disjunction()){
 				result = false;
-			}else {
+			}else if(!result && !disjunction())
+				result = true;
+			else {
 				result = true;
 			}
 
@@ -131,9 +138,11 @@ public class Parser extends model.AbstractParser {
 	private boolean expression() {
 		boolean result;
 		// needs to peek instead
-		if(accept(Tokens.OPEN_PAREN)){
+		if(peek(Tokens.OPEN_PAREN)){
+			expect(Tokens.OPEN_PAREN);
 			result = equivalence();
 			expect(Tokens.CLOSE_PAREN);
+			return result;
 		}
 		result = bool();
 		return result;
@@ -165,9 +174,7 @@ public class Parser extends model.AbstractParser {
 	}
 
 	public boolean peek(Tokens token) {
-		Lex.lex();
-		Tokens next_token = Lex.TOKEN;
-		return next_token == token;
+		return Lex.TOKEN == token;
 	}
 
 	/**
@@ -187,7 +194,6 @@ public class Parser extends model.AbstractParser {
 
 			acceptable = true;
 			Lex.lex();
-			lexeme_index++;
 		}
 		else{
 			acceptable = false;
@@ -209,7 +215,6 @@ public class Parser extends model.AbstractParser {
 	public void expect(Tokens token) {
 		if (Lex.TOKEN==token){
 			Lex.lex();
-			lexeme_index++;
 		}
 		else{
 			throw new UnsupportedOperationException("Lexer next token unacceptable. Expect method failure.");
