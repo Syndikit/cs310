@@ -51,6 +51,7 @@ public class Main {
     }
 
     public static void main(String[] args) {
+        /*
         String sentence = "bool P = 0, bool Q = 0, bool R = P' ^ Q', test R?";
         Tokens[] tokens;
 
@@ -62,7 +63,28 @@ public class Main {
             LEXER.lex();
             System.out.println(LEXER.TOKEN);
         }while(LEXER.TOKEN != null);
+        */
+        int[] lookup_bool = new int[10];
+        char[] lookup_char = new char[10];
+        
+        for(int i =0; i< 5;i++){
 
+            if(i%2 == 0) {
+                lookup_bool[i] = 0;
+                lookup_char[i] = 'Q';
+            }else if(i%3 == 0) {
+                lookup_bool[i] = 1;
+                lookup_char[i] = 'R';
+            }else{
+                lookup_bool[i] = 0;
+                lookup_char[i] = 'P';
+            }
+
+        }
+
+        for (int i=0;i<lookup_bool.length;i++) {
+            System.out.println(lookup_char[i] + " "+ lookup_bool[i]);
+        }
 
     }
 }
