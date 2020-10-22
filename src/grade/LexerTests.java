@@ -167,6 +167,6 @@ public class LexerTests {
 				tokens[i],
 				LEXER.TOKEN
 			);
-		}
+		} System.out.println(LEXER.LEXEME);
 	}
 }

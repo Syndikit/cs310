@@ -8,7 +8,6 @@ import static model.AbstractLexer.Tokens.*;
 public class Lexer extends model.AbstractLexer {
 	public int index;
 	private char[] S;
-	public int lexeme_index;
 
 	/*
 	Checks whether character is within the acceptable range of decimal values for letters (upper and lowercase)
@@ -17,9 +16,9 @@ public class Lexer extends model.AbstractLexer {
 
 		boolean in = false;
 
-		if ((target > 64) && (target < 91) && !(target==86)) {
+		if ((target > 64) & (target < 91) & !(target==86)) {
 			in = true;
-		} else if ((target > 96) && (target < 123)&& !(target==118)) {
+		} else if ((target > 96) & (target < 123) & !(target==118)) {
 			in = true;
 		}
 		return in;
@@ -38,7 +37,7 @@ public class Lexer extends model.AbstractLexer {
 		S = sentence;
 		LEXEME = new char[10];
 		index = 0;
-		lexeme_index = 0;
+
 		//throw new UnsupportedOperationException();
 	}
 
@@ -133,10 +132,10 @@ public class Lexer extends model.AbstractLexer {
 			// Looks for alphabetical characters that don't fit the above criteria and are variables
 			else if(isAlpha(S[index])){
 				TOKEN = VARIABLE_NAME;
-				LEXEME[lexeme_index] = S[index];
+				LEXEME[0] = S[index];
 				index++;
-				lexeme_index++;
-			}
+
+			}else throw new IllegalStateException("Not a valid lexeme");
 
 		}
 

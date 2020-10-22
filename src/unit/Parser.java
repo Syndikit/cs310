@@ -1,21 +1,16 @@
 /*
 * @author Michael Austin
-*  Academic Integrity Statement: I have read the academic integrity policy and the code I am submitting is my own.
+* Academic Integrity Statement: I have read the academic integrity policy and the code I am submitting is my own.
 * I have not collaborated, or shared it with anyone else.
 */
 
 package unit;
-
 import model.AbstractLexer;
-import unit.Lexer;
 import model.AbstractLexer.Tokens;
 
 public class Parser extends model.AbstractParser {
-	boolean[] lookup_bool = new boolean[3];
-	char[] lookup_char = new char[3];
-	int lookup_index;
-	int lexeme_index;
-	Lexer Lex = new Lexer();
+	boolean[] lookup_bool = new boolean[26];
+	char[] lookup_char = new char[]{'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'};
 
 
 	/**
@@ -36,12 +31,15 @@ public class Parser extends model.AbstractParser {
 	 */
 	@Override
 	public boolean evaluate(char[] sentence) {
+		lexer = new Lexer();
 		boolean evaluation;
-		Lex.initialize(sentence);
-		//this.trace_start();
-		Lex.lex();
+		lexer.initialize(sentence);
+		lexer.lex();
 		evaluation = program();
-		accept(null);
+		expect(null);
+		if(evaluation != true & evaluation != false){
+			throw new IllegalStateException("Invalid sentence");
+		}
 		return evaluation;
 	}
 
@@ -55,8 +53,6 @@ public class Parser extends model.AbstractParser {
 	*/
 	private boolean program() {
 		//trace_open("Program");
-		lookup_index = 0;
-		lexeme_index = 0;
 		boolean result;
 		while(peek(Tokens.BEGIN_BOOL)) {
 			assignment();
@@ -72,11 +68,13 @@ public class Parser extends model.AbstractParser {
 		expect(Tokens.VARIABLE_NAME);
 		char var = variable();
 		expect(Tokens.ASSIGNMENT);
-
-		lookup_char[lookup_index] = var;
-		lookup_bool[lookup_index] = equivalence();
-
-
+		boolean value = equivalence();
+		for(int i =0; i<lookup_char.length;i++){
+			if(lookup_char[i]==var){
+				lookup_bool[i] = value;
+			}
+		}
+		expect(Tokens.END_BOOL);
 	}
 
 	private boolean evaluation() {
@@ -93,7 +91,7 @@ public class Parser extends model.AbstractParser {
 
 		boolean result = implication();
 		while(accept(Tokens.EQUIVALENCE)){
-			return result == implication();
+			result= (result == implication());
 		}
 		return result;
 	}
@@ -110,11 +108,13 @@ public class Parser extends model.AbstractParser {
 	private boolean implication() {
 		boolean result = disjunction();
 		while(accept(Tokens.IMPLICATION)) {
-			if(result && !disjunction()){
+			if(result & !disjunction()){
 				result = false;
-			}else if(!result && !disjunction())
+			}else if(!result & !disjunction())
 				result = true;
-			else {
+			else if(result & disjunction()){
+				result = true;
+			}else{
 				result = true;
 			}
 
@@ -133,8 +133,8 @@ public class Parser extends model.AbstractParser {
 	private boolean disjunction() {
 		boolean result = conjunction();
 		while(accept(Tokens.DISJUNCTION)) {
-			boolean r2 = conjunction();
-			result = result || r2;
+
+			result = result | conjunction();
 		}
 		return result;
 	}
@@ -150,7 +150,7 @@ public class Parser extends model.AbstractParser {
 	private boolean conjunction() {
 		boolean result = negation();
 		while(accept(Tokens.CONJUNCTION)){
-			result = (result && negation());
+			result = result & negation();
 		}
 		return result;
 	}
@@ -178,21 +178,26 @@ public class Parser extends model.AbstractParser {
 	}
 	private boolean bool() {
 		boolean result = true;
+		boolean found = false;
 		if(accept(Tokens.TRUE_LITERAL)){
 			result = true;
 		}
-		if(accept(Tokens.FALSE_LITERAL)){
+		else if(accept(Tokens.FALSE_LITERAL)){
 			result = false;
 		}
-		if(accept(Tokens.VARIABLE_NAME)){
+		if(peek(Tokens.VARIABLE_NAME)){
 			char target = variable();
-			System.out.println(target);
-			for(int i = 0; i < lookup_char.length; i++){
+			expect(Tokens.VARIABLE_NAME);
+			int i = 0;
+			while(i < lookup_char.length ){
 				if(lookup_char[i] == target){
-					return lookup_bool[i];
-				} if(i==lookup_char.length-1){
-					result = false;
+					found=true;
+					result= lookup_bool[i];
+				} else if(!found & (i==lookup_char.length-1)  ){
+					System.out.println(target);
+					throw new IllegalThreadStateException("Var not found. Expected: "+target+" Target Class: " );
 				}
+				i++;
 			}
 
 		}
@@ -201,11 +206,11 @@ public class Parser extends model.AbstractParser {
 	}
 
 	private char variable() {
-		return Lex.LEXEME[lexeme_index];
+		return lexer.LEXEME[0];
 	}
 
 	public boolean peek(Tokens token) {
-		return Lex.TOKEN == token;
+		return lexer.TOKEN == token;
 	}
 
 	/**
@@ -221,10 +226,10 @@ public class Parser extends model.AbstractParser {
 	public boolean accept(Tokens token) {
 		boolean acceptable;
 
-		if (Lex.TOKEN==token){
+		if (lexer.TOKEN==token){
 
 			acceptable = true;
-			Lex.lex();
+			lexer.lex();
 		}
 		else{
 			acceptable = false;
@@ -244,11 +249,11 @@ public class Parser extends model.AbstractParser {
 	 */
 	@Override
 	public void expect(Tokens token) {
-		if (Lex.TOKEN==token){
-			Lex.lex();
+		if (lexer.TOKEN==token){
+			lexer.lex();
 		}
 		else{
-			throw new UnsupportedOperationException("Expect method failure. Expected: "+token+"; Received: "+Lex.TOKEN);
+			throw new UnsupportedOperationException("Expect method failure. Expected: "+token+"; Received: "+lexer.TOKEN);
 		}
 	}
 }

@@ -64,27 +64,15 @@ public class Main {
             System.out.println(LEXER.TOKEN);
         }while(LEXER.TOKEN != null);
         */
-        int[] lookup_bool = new int[10];
-        char[] lookup_char = new char[10];
-        
-        for(int i =0; i< 5;i++){
-
-            if(i%2 == 0) {
-                lookup_bool[i] = 0;
-                lookup_char[i] = 'Q';
-            }else if(i%3 == 0) {
-                lookup_bool[i] = 1;
-                lookup_char[i] = 'R';
-            }else{
-                lookup_bool[i] = 0;
-                lookup_char[i] = 'P';
-            }
-
+        char[] alpha = new char[26];
+        for(int i = 0; i < 26; i++){
+            alpha[i] = (char)(65 + i);
+        }
+        for(int i =0; i<alpha.length; i++){
+            System.out.print(alpha[i]+",");
         }
 
-        for (int i=0;i<lookup_bool.length;i++) {
-            System.out.println(lookup_char[i] + " "+ lookup_bool[i]);
-        }
+
 
     }
 }
