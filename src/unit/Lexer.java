@@ -100,7 +100,7 @@ public class Lexer extends model.AbstractLexer {
 				TOKEN = CONJUNCTION;
 				index++;
 			}
-			// Tests for v or V character
+			// Tests for v character
 			else if((S[index] == 118)){
 				TOKEN =  DISJUNCTION;
 				index++;
@@ -137,10 +137,9 @@ public class Lexer extends model.AbstractLexer {
 				index++;
 				lexeme_index++;
 			}
+
 		}
 
-
-		//throw new UnsupportedOperationException("Lex method failed");
 	}
 
 }

@@ -11,8 +11,8 @@ import unit.Lexer;
 import model.AbstractLexer.Tokens;
 
 public class Parser extends model.AbstractParser {
-	boolean[] lookup_bool = new boolean[10];
-	char[] lookup_char = new char[10];
+	boolean[] lookup_bool = new boolean[3];
+	char[] lookup_char = new char[3];
 	int lookup_index;
 	int lexeme_index;
 	Lexer Lex = new Lexer();
@@ -41,7 +41,7 @@ public class Parser extends model.AbstractParser {
 		//this.trace_start();
 		Lex.lex();
 		evaluation = program();
-		expect(null);
+		accept(null);
 		return evaluation;
 	}
 
@@ -57,13 +57,12 @@ public class Parser extends model.AbstractParser {
 		//trace_open("Program");
 		lookup_index = 0;
 		lexeme_index = 0;
-		boolean result = false;
-		while(peek(Tokens.BEGIN_BOOL) || peek(Tokens.BEGIN_TEST)){
-			if(accept(Tokens.BEGIN_BOOL))
-				assignment();
-			else if(accept(Tokens.BEGIN_TEST))
-				result = evaluation();
+		boolean result;
+		while(peek(Tokens.BEGIN_BOOL)) {
+			assignment();
 		}
+
+		result = evaluation();
 
 		return result;
 	}
@@ -82,8 +81,9 @@ public class Parser extends model.AbstractParser {
 
 	private boolean evaluation() {
 		boolean result = true;
-		while(!accept(Tokens.END_TEST)){
+		while(accept(Tokens.BEGIN_TEST)){
 			result = equivalence();
+			expect(Tokens.END_TEST);
 		}
 
 		return result;
@@ -98,6 +98,15 @@ public class Parser extends model.AbstractParser {
 		return result;
 	}
 
+	// If this, then that. ->
+	/* Truth Table
+	 * P | Q | P -> Q
+	 * ------------
+	 * T | T | T
+	 * T | F | F
+	 * F | T | T
+	 * F | F | T
+	 */
 	private boolean implication() {
 		boolean result = disjunction();
 		while(accept(Tokens.IMPLICATION)) {
@@ -112,20 +121,40 @@ public class Parser extends model.AbstractParser {
 		}
 		return result;
 	}
+	// When v shows up; logical OR
+	/* Truth Table
+	* P | Q | P V Q
+	* ------------
+	* T | T | T
+	* T | F | T
+	* F | T | T
+	* F | F | F
+	*/
 	private boolean disjunction() {
 		boolean result = conjunction();
-		if(accept(Tokens.DISJUNCTION)) {
-			result = (result || conjunction());
+		while(accept(Tokens.DISJUNCTION)) {
+			boolean r2 = conjunction();
+			result = result || r2;
 		}
 		return result;
 	}
+	// When ^ shows up; logical AND
+	/* Truth Table
+	 * P | Q | P ^ Q
+	 * ------------
+	 * T | T | T
+	 * T | F | F
+	 * F | T | F
+	 * F | F | F
+	 */
 	private boolean conjunction() {
 		boolean result = negation();
-		if(accept(Tokens.CONJUNCTION)){
+		while(accept(Tokens.CONJUNCTION)){
 			result = (result && negation());
 		}
 		return result;
 	}
+	// ' symbol. Opposite
 	private boolean negation() {
 
 		boolean expression = expression();
@@ -138,29 +167,31 @@ public class Parser extends model.AbstractParser {
 	private boolean expression() {
 		boolean result;
 		// needs to peek instead
-		if(peek(Tokens.OPEN_PAREN)){
-			expect(Tokens.OPEN_PAREN);
+		if(accept(Tokens.OPEN_PAREN)){
+			//accept(Tokens.OPEN_PAREN);
 			result = equivalence();
 			expect(Tokens.CLOSE_PAREN);
 			return result;
-		}
-		result = bool();
+		}else result = bool();
+
 		return result;
 	}
 	private boolean bool() {
-		boolean result = false;
+		boolean result = true;
 		if(accept(Tokens.TRUE_LITERAL)){
 			result = true;
-		} else if(accept(Tokens.FALSE_LITERAL)){
+		}
+		if(accept(Tokens.FALSE_LITERAL)){
 			result = false;
-		} else if (accept(Tokens.VARIABLE_NAME)){
+		}
+		if(accept(Tokens.VARIABLE_NAME)){
 			char target = variable();
+			System.out.println(target);
 			for(int i = 0; i < lookup_char.length; i++){
 				if(lookup_char[i] == target){
-					if(lookup_bool[i])
-						result = true;
-					else if(!lookup_bool[i])
-						result = false;
+					return lookup_bool[i];
+				} if(i==lookup_char.length-1){
+					result = false;
 				}
 			}
 
@@ -217,8 +248,7 @@ public class Parser extends model.AbstractParser {
 			Lex.lex();
 		}
 		else{
-			throw new UnsupportedOperationException("Lexer next token unacceptable. Expect method failure.");
+			throw new UnsupportedOperationException("Expect method failure. Expected: "+token+"; Received: "+Lex.TOKEN);
 		}
-		return;
 	}
 }
