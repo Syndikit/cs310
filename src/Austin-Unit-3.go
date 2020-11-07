@@ -1,49 +1,49 @@
+/* Name: Michael Austin
+* Academic integrity statement: I complied with all academic integrity policies * of WVU and have not cheated. 
+*
+*/
 package main
 
 import (
 	"fmt"
 )
 
-func factorial(n int) int{
-	var result = 1
-	for i:=n; i >=1; i--{
-		result *= i
+func hypercake(n int, k int) int{
+
+	combinations := func(x int, r int) int{
+
+		var factorial func(m int) int
+		factorial = func(m int) int{
+			if m==1 || m ==0 {
+				return 1
+			}
+			return m*factorial(m-1)	
+		}
+		var numerator = factorial(x)
+    	var rFactorial = factorial(r)
+    	var nMinusRFactorial = factorial(x-r)
+    	return (numerator/(rFactorial * nMinusRFactorial))
+	}
+	var result int = 0
+	for i:=0; i<=k;i++{
+		result += combinations(n,i)
 	}
 	return result
 }
 
-func combinations(n int, r int) int{
-	var numerator = factorial(n)
-    var rFactorial = factorial(r)
-    var nMinusRFactorial = factorial(n-r)
-    return (numerator/(rFactorial*nMinusRFactorial))
+func display(){
+	var n int
+	var k int
+	fmt.Println("Please enter a value for n number of cuts: ")
+	fmt.Scanln(&n)
+	fmt.Println("Please enter a value for k dimensions: ")
+	fmt.Scanln(&k)
+	var result = hypercake(n,k)
+	var out = fmt.Sprintf("The hypercake result of n = %d and k = %d is: %d",n,k,result)
+	fmt.Println(out)
 }
-
-func pancake(n int) int{
-	var n0 int = combinations(n,0)
-    var n1 int = combinations(n,1)
-	var n2 int = combinations(n,2)
-    return n0 + n1 + n2
-}
-
-func cake(n int) int{
-	var pan = pancake(n)
-	var n3 = combinations(n,3)
-	return pan + n3
-}
-
-func hypercake(n int) int{
-	var result = cake(n)
-	var counter = 3
-	
-    for i:= 4; i<n;i++{
-		result += combinations(n,counter)
-	}
-	return result
-}
-
    
 
 func main(){
-	fmt.Println(hypercake(7))
+	display()
 }
