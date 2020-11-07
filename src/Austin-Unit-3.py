@@ -1,9 +1,5 @@
 #!/usr/bin/env python
 # coding: utf-8
-
-# In[19]:
-
-
 """
 Name: Michael Austin
 
@@ -42,15 +38,11 @@ def display():
     result = hypercake(n,k)
     print(f"The hypercake result of n = {n} and k = {k} is {result}")
 
+def main():
+    display()
 
-# In[21]:
-
-
-print(hypercake(9,4))
-
-
-# In[ ]:
-
+if __name__ == "__main__":
+    main()
 
 
 
